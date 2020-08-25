@@ -4,10 +4,10 @@ namespace App\Game;
 
 class GameManager
 {
-
     public $topCard;
     private $deck;
     private $players = [];
+    private $startingGameWith = '';
 
     public function __construct()
     {
@@ -21,16 +21,19 @@ class GameManager
 
     public function handOutCards()
     {
-        foreach ($this->players as $player) {
-
+        foreach ($this->players as $i => $player) {
+            $this->startingGameWith .= $player->name.', ';
+            
             foreach (array_rand($this->deck->cards, 7) as $key) {
                 $card = $this->deck->cards[$key];
+
                 $player->addToHand($card);
+
                 $this->deck->remove($key);
             }
         }
 
-        sort($this->deck->cards);
+        $this->deck->sort();
     }
 
     public function topCard()
@@ -40,15 +43,40 @@ class GameManager
         return $this->topCard;
     }
 
-    public function start()
+    public function startingPlayers()
     {
-        echo 'Starting game with ';
+        $this->startingGameWith = rtrim($this->startingGameWith, ', ');
 
-        foreach ($this->players as $player) {
-            echo $player->name.', ';
-        }
+        echo 'Starting game with '. $this->startingGameWith;
 
         echo '<br>';
+
+    }
+
+    public function playerHasCardToPlay(Player $player)
+    {
+        $topCardSuit = explode(";",$this->topCard)[0];
+        $topCardValue = explode(";",$this->topCard)[1];
+
+        foreach ($player->getPlayerCards() as $key => $playerCard) {
+            $playerSuit = explode(";",$playerCard)[0];
+            $playerValue = explode(";",$playerCard)[1];
+
+            if (($topCardSuit == $playerSuit) || ($topCardValue == $playerValue)) {
+                $this->topCard = $playerCard;
+
+                $player->removeFromHand($key);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function start()
+    {
+        $this->startingPlayers();
 
         foreach ($this->players as $player) {
             echo $player->showHand().'<br>';
@@ -60,15 +88,16 @@ class GameManager
 
         do {
             foreach ($this->players as $player) {
-                if ($player->throwCard($this)) {
+                if ($this->playerHasCardToPlay($player)) {
                     echo $player->name . ' played ' . $this->topCard . '<br>';
 
-                    if ($player->amountOfCards() == 0) {
+                    if ($player->handEmpty()) {
                         die($player->name.' has won');
                     }
 
                 } else {
                     $card = $this->deck->getCard();
+
                     $player->addToHand($card);
 
                     echo $player->name . ' does not have a suitable card, taking from deck ' . $card . '<br>';
