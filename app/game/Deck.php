@@ -23,7 +23,6 @@ class Deck
 
     public function getCard()
     {
-     
         if (!$this->empty()) {
 
             $topCardKey = $this->size()-1;
@@ -48,7 +47,6 @@ class Deck
 
     public function size()
     {
-
         return count($this->cards);
     }
 
