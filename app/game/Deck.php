@@ -5,7 +5,6 @@ namespace App\Game;
 class Deck
 {
     public $cards = [];
-
     private $suits = ['&hearts;', '&diams;', '&clubs;', '&spades;'];
     private $values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
@@ -24,16 +23,15 @@ class Deck
 
     public function getCard()
     {
+     
         if (!$this->empty()) {
 
-            $key = array_rand($this->cards,1);
+            $topCardKey = $this->size()-1;
 
-            $card = $this->cards[$key];
+            $card = $this->cards[$topCardKey];
 
-            $this->remove($key);
-
-            sort($this->cards);
-
+            $this->remove($topCardKey);
+        
             return $card;
 
         } else {
@@ -42,7 +40,14 @@ class Deck
         }
     }
 
-    public function size() {
+    public function sort() 
+    {
+        sort($this->cards);
+
+    }
+
+    public function size()
+    {
 
         return count($this->cards);
     }
