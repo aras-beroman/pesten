@@ -17,11 +17,6 @@ class Player
         array_push($this->playerCards,$card);
     }
 
-    public function removeFromHand($key)
-    {
-        unset($this->playerCards[$key]);
-    }
-
     public function showHand()
     {
         echo $this->name.' has been dealt ';
@@ -31,30 +26,18 @@ class Player
         }
     }
 
-    public function amountOfCards()
+    public function getPlayerCards()
     {
-        return count($this->playerCards);
+        return $this->playerCards;
     }
 
-    public function throwCard(GameManager $gameManager)
+    public function removeFromHand($key)
     {
-        $topCardSuit = explode(";",$gameManager->topCard)[0];
-        $topCardValue = explode(";",$gameManager->topCard)[1];
+        unset($this->playerCards[$key]);
+    }
 
-        foreach ($this->playerCards as $key => $playerCard) {
-            $playerSuit = explode(";",$playerCard)[0];
-            $playerValue = explode(";",$playerCard)[1];
-
-            if (($topCardSuit == $playerSuit) || ($topCardValue == $playerValue)) {
-                $gameManager->topCard = $playerCard;
-
-                $this->removeFromHand($key);
-
-                return true;
-
-            }
-        }
-
-        return false;
+    public function handEmpty()
+    {
+        return count($this->playerCards) == 0;
     }
 }
